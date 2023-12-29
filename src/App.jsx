@@ -5,19 +5,27 @@ import Header from "./components/header/Header";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import { useFetchAndStoreCurrentUser } from "./services/helpers";
-import { useSelector } from "react-redux";
+import Post from "./pages/Post";
+import AddPost from "./pages/AddPost";
+import Protected from "./pages/Protected";
 const App = () => {
-  const {userData} = useSelector((state)=>state.userSliceReducer)
   //get current logged in user details
   const fetchAndStoreCurrentUser = useFetchAndStoreCurrentUser();
   useEffect(() => {
-    fetchAndStoreCurrentUser();
-  }, [userData]);
+    const getAndSetUser = async () => {
+      await fetchAndStoreCurrentUser();
+    };
+    getAndSetUser();
+  }, []);
   return (
     <>
       <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route element={<Protected />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/add-post" element={<AddPost />} />
+        </Route>
+        <Route path="/post" element={<Post />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
       </Routes>

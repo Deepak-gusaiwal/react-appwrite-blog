@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input, Button } from "../components";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginValidator } from "../config/formValidator";
 import { authService } from "../services/auth";
+import { useFetchAndStoreCurrentUser } from "../services/helpers";
+import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 const Login = () => {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const fetchAndStoreCurrentUser = useFetchAndStoreCurrentUser();
+  const { isUserActive } = useSelector((state) => state.userSliceReducer);
   const {
     register,
     handleSubmit,
@@ -18,12 +24,18 @@ const Login = () => {
     setLoading(true);
     try {
       await authService.login({ ...data });
+      await fetchAndStoreCurrentUser();
+      navigate("/");
     } catch (error) {
       console.log("Login failed:", error.message);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    isUserActive && navigate("/");
+  }, [isUserActive]);
   return (
     <>
       <div className="max-w-[500px] mx-auto my-2 p-2 rounded bg-zinc-200">

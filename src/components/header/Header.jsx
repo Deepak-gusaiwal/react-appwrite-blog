@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, Container } from "../index";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authService } from "../../services/auth";
+import { storeLogout } from "../../redux/userSlice";
 const Header = () => {
   const { userData, isUserActive } = useSelector(
     (state) => state.userSliceReducer
   );
 
+  const dispatch = useDispatch();
   const navItems = [
     {
       name: "home",
@@ -38,12 +40,13 @@ const Header = () => {
 
   const logoutHanddler = async () => {
     try {
-      const response = await authService.logout();
-      console.log("logout user response", response);
+      await authService.logout();
+      dispatch(storeLogout());
     } catch (error) {
       console.log("Failed in LogoutHanddler ::", error.message);
     }
   };
+
   return (
     <header className="bg-blue-500 h-[60px] flex items-center">
       <Container>
@@ -64,7 +67,11 @@ const Header = () => {
                 );
               } else if (item.public) {
                 return (
-                  <Link className="hover:text-white" to={item.url}>
+                  <Link
+                    key={item.name}
+                    className="hover:text-white"
+                    to={item.url}
+                  >
                     {item.name}
                   </Link>
                 );
@@ -77,7 +84,7 @@ const Header = () => {
                 type="button"
               >
                 Logout
-              </Button> 
+              </Button>
             )}
           </div>
         </nav>
