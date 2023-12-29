@@ -7,7 +7,35 @@ const Header = () => {
   const { userData, isUserActive } = useSelector(
     (state) => state.userSliceReducer
   );
-  console.log(userData,isUserActive);
+
+  const navItems = [
+    {
+      name: "home",
+      url: "/",
+      active: isUserActive,
+    },
+    {
+      name: "post",
+      url: "/post",
+      public: true,
+    },
+    {
+      name: "add post",
+      url: "/add-post",
+      active: isUserActive,
+    },
+    {
+      name: "login",
+      url: "/login",
+      active: !isUserActive,
+    },
+    {
+      name: "signup",
+      url: "/signup",
+      active: !isUserActive,
+    },
+  ];
+
   const logoutHanddler = async () => {
     try {
       const response = await authService.logout();
@@ -23,25 +51,34 @@ const Header = () => {
           <Link className="text-2xl font-bold uppercase">Logo</Link>
 
           <div className="flex capitalize gap-2 items-center font-semibold">
-            <Link className="hover:text-white" to="/">
-              Home
-            </Link>
-            <Link className="hover:text-white" to="/posts">
-              Posts
-            </Link>
-            <Link className="hover:text-white" to="/login">
-              login
-            </Link>
-            <Link className="hover:text-white" to="/signup">
-              signup
-            </Link>
-            <Button
-              onClick={logoutHanddler}
-              className="bg-red-500 hover:bg-red-600 text-white"
-              type="button"
-            >
-              Logout
-            </Button>
+            {navItems.map((item) => {
+              if (item.active) {
+                return (
+                  <Link
+                    key={item.name}
+                    className="hover:text-white"
+                    to={item.url}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              } else if (item.public) {
+                return (
+                  <Link className="hover:text-white" to={item.url}>
+                    {item.name}
+                  </Link>
+                );
+              }
+            })}
+            {isUserActive && (
+              <Button
+                onClick={logoutHanddler}
+                className="bg-red-500 hover:bg-red-600 text-white"
+                type="button"
+              >
+                Logout
+              </Button> 
+            )}
           </div>
         </nav>
       </Container>
