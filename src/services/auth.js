@@ -8,7 +8,6 @@ class AuthService {
     this.client.setEndpoint(endPointUrl).setProject(projectId);
     this.account = new Account(this.client);
   }
-
   async createAccount({ email, password, name }) {
     try {
       const user = await this.account.create(
@@ -41,13 +40,12 @@ class AuthService {
       const currentUser = await this.account.get();
       return currentUser ? currentUser : null;
     } catch (error) {
-      console.log("Auth Service :: Failed In Get Current User ::", error.message);
       throw error;
     }
   }
   async logout() {
     try {
-    //   await this.account.deleteSession(["current"]);
+      //   await this.account.deleteSession(["current"]);
       await this.account.deleteSessions();
     } catch (error) {
       console.log("Auth Service :: Failed to Logout ::", error.message);
