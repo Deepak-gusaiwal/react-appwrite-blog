@@ -1,4 +1,4 @@
-import { Client, ID, Databases, Storage, Query } from "appwrite";
+import { Client, Databases } from "appwrite";
 import { endPointUrl, projectId, dbId, collectionId, bucketId } from "../config/env";
 class PostService {
     client = new Client;
