@@ -1,14 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Container } from "../index";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { authService } from "../../services/auth";
 import { storeLogout } from "../../redux/userSlice";
 const Header = () => {
+  const [loading, setLoading] = useState(false);
   const { userData, isUserActive } = useSelector(
     (state) => state.userSliceReducer
   );
-
   const dispatch = useDispatch();
   const navItems = [
     {
@@ -39,11 +39,14 @@ const Header = () => {
   ];
 
   const logoutHanddler = async () => {
+    setLoading(true);
     try {
       await authService.logout();
       dispatch(storeLogout());
     } catch (error) {
       console.log("Failed in LogoutHanddler ::", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -82,6 +85,7 @@ const Header = () => {
                 onClick={logoutHanddler}
                 className="bg-red-500 hover:bg-red-600 text-white"
                 type="button"
+                loading={loading}
               >
                 Logout
               </Button>
