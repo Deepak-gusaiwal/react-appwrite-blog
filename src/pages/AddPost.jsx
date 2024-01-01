@@ -1,11 +1,8 @@
-import React from 'react'
+import React from "react";
+import { PostForm } from "../components";
 
 const AddPost = () => {
-  return (
-    <div>
-      add post page
-    </div>
-  )
-}
+  return <PostForm />;
+};
 
-export default AddPost
+export default AddPost;

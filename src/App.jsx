@@ -1,31 +1,54 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Header from "./components/header/Header";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-import { useFetchAndStoreCurrentUser } from "./services/helpers";
+import {
+  useFetchAndStoreCurrentUser,
+  useFetchAndStorePosts,
+} from "./services/helpers";
 import Post from "./pages/Post";
 import AddPost from "./pages/AddPost";
 import Protected from "./pages/Protected";
+import { Loading } from "./components";
+import { useSelector } from "react-redux";
+import EditPost from "./pages/EditPost";
+import SinglePost from "./pages/SinglePost";
 const App = () => {
+  const [loading, setLoading] = useState(true);
+  const { userData } = useSelector((state) => state.userSliceReducer);
   //get current logged in user details
   const fetchAndStoreCurrentUser = useFetchAndStoreCurrentUser();
-  useEffect(() => {
-    const getAndSetUser = async () => {
-      await fetchAndStoreCurrentUser();
+  const fetchAndStorePosts = useFetchAndStorePosts();
+  const getDetails = useMemo(() => {
+    return async () => {
+      try {
+        await fetchAndStorePosts();
+        await fetchAndStoreCurrentUser();
+      } finally {
+        setLoading(false);
+      }
     };
-    getAndSetUser();
+  }, [userData]);
+  useEffect(() => {
+    getDetails();
   }, []);
-  return (
+  return loading ? (
+    <div className="flex justify-center items-center w-full h-[100vh] bg-gray-200">
+      <Loading color="red" size="16" border="4" />
+    </div>
+  ) : (
     <>
       <Header />
       <Routes>
         <Route element={<Protected />}>
           <Route path="/" element={<Home />} />
           <Route path="/add-post" element={<AddPost />} />
+          <Route path="/edit/:slug" element={<EditPost />} />
         </Route>
         <Route path="/post" element={<Post />} />
+        <Route path="/post/:slug" element={<SinglePost />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
       </Routes>
