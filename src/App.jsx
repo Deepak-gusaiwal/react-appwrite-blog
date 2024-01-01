@@ -18,21 +18,20 @@ import SinglePost from "./pages/SinglePost";
 const App = () => {
   const [loading, setLoading] = useState(true);
   const { userData } = useSelector((state) => state.userSliceReducer);
+  const { allPosts } = useSelector((state) => state.postSliceReducer);
   //get current logged in user details
   const fetchAndStoreCurrentUser = useFetchAndStoreCurrentUser();
   const fetchAndStorePosts = useFetchAndStorePosts();
-  const getDetails = useMemo(() => {
-    return async () => {
-      try {
-        await fetchAndStorePosts();
-        await fetchAndStoreCurrentUser();
-      } finally {
-        setLoading(false);
-      }
-    };
-  }, [userData]);
+  const getPostsAndCurrentUser = async () => {
+    try {
+      await fetchAndStorePosts();
+      await fetchAndStoreCurrentUser();
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    getDetails();
+    getPostsAndCurrentUser();
   }, []);
   return loading ? (
     <div className="flex justify-center items-center w-full h-[100vh] bg-gray-200">

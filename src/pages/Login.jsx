@@ -4,13 +4,17 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginValidator } from "../config/formValidator";
 import { authService } from "../services/auth";
-import { useFetchAndStoreCurrentUser } from "../services/helpers";
+import {
+  useFetchAndStoreCurrentUser,
+  useFetchAndStorePosts,
+} from "../services/helpers";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const fetchAndStoreCurrentUser = useFetchAndStoreCurrentUser();
+  const fetchAndStorePosts = useFetchAndStorePosts();
   const { isUserActive } = useSelector((state) => state.userSliceReducer);
   const {
     register,
@@ -25,6 +29,7 @@ const Login = () => {
     try {
       await authService.login({ ...data });
       await fetchAndStoreCurrentUser();
+      await fetchAndStorePosts();
       navigate("/");
     } catch (error) {
       console.log("Login failed:", error.message);
