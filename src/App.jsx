@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Header from "./components/header/Header";
@@ -24,8 +24,8 @@ const App = () => {
   const fetchAndStorePosts = useFetchAndStorePosts();
   const getPostsAndCurrentUser = async () => {
     try {
-      await fetchAndStorePosts();
       await fetchAndStoreCurrentUser();
+      await fetchAndStorePosts();
     } finally {
       setLoading(false);
     }
@@ -33,6 +33,15 @@ const App = () => {
   useEffect(() => {
     getPostsAndCurrentUser();
   }, []);
+
+  //to set the post while userData changed
+  useEffect(() => {
+    const getPosts = async () => {
+      await fetchAndStorePosts();
+    };
+    getPosts();
+  }, [userData]);
+
   return loading ? (
     <div className="flex justify-center items-center w-full h-[100vh] bg-gray-200">
       <Loading color="red" size="16" border="4" />

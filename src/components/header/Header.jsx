@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Container } from "../index";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { authService } from "../../services/auth";
 import { storeLogout } from "../../redux/userSlice";
@@ -10,6 +10,7 @@ const Header = () => {
     (state) => state.userSliceReducer
   );
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const navItems = [
     {
       name: "home",
@@ -43,6 +44,7 @@ const Header = () => {
     try {
       await authService.logout();
       dispatch(storeLogout());
+      navigate("/login");
     } catch (error) {
       console.log("Failed in LogoutHanddler ::", error.message);
     } finally {
