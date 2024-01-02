@@ -1,14 +1,11 @@
 import React from "react";
 
-const Input = ({
+const FileInput = ({
   label,
-  type = "text",
-  placeholder,
   className = "",
   register,
   errors,
   name,
-  readOnly = false,
   ...props
 }) => {
   return (
@@ -20,11 +17,9 @@ const Input = ({
       )}
       <input
         id={name}
-        type={type}
-        placeholder={placeholder}
+        type="file"
         className={`w-full py-1 px-2 rounded shadow ${className}`}
         {...register(name)}
-        readOnly={readOnly}
         {...props}
       />
 
@@ -35,4 +30,4 @@ const Input = ({
   );
 };
 
-export default Input;
+export default FileInput;

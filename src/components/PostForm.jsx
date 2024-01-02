@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Container, Input, RTE } from "./index";
+import { Button, Container, FileInput, Input, RTE } from "./index";
 import { useForm } from "react-hook-form";
 import { postValidator } from "../config/formValidator";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -14,6 +14,8 @@ const PostForm = ({ post }) => {
     register,
     handleSubmit,
     setValue,
+    control,
+    getValues,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(postValidator),
@@ -36,6 +38,11 @@ const PostForm = ({ post }) => {
       .replace(/[^\w-]+/g, ""); // Remove any non-word characters (excluding hyphens)
   };
 
+  //const get image url while user trying to update the post
+  const imageUrl = post
+    ? bucketService.getFilePreview(post?.featuredImage).href
+    : null;
+  console.log("image url is", imageUrl);
   //============form submit
   const formSubmit = async (data) => {
     setLoading(true);
@@ -118,25 +125,24 @@ const PostForm = ({ post }) => {
           />
 
           <RTE
-            register={register}
             errors={errors}
-            placeholder="enter content"
             name="content"
             label="content"
             setValue={setValue}
-            post={post}
+            control={control}
+            defaultValue={getValues("content")}
           />
         </div>
         <div className="col-span-12 sm:col-span-5">
-          <Input
-            register={register}
-            errors={errors}
-            type="file"
-            placeholder="enter title"
-            name="featuredImage"
-            label="featuredImage"
-            accept="image/png,image,jpg,image/jpeg,image/gif"
+          <FileInput 
+           register={register}
+           errors={errors}
+           name="featuredImage"
+           label="featuredImage"
+           accept="image/png,image,jpg,image/jpeg,image/gif"
+          //  defaultValue={imageUrl}
           />
+        
           <Input
             register={register}
             errors={errors}

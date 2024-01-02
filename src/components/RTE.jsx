@@ -4,11 +4,10 @@ import ReactQuill from "react-quill";
 const RTE = ({
   label,
   name,
-  register,
   errors,
   className = "",
   setValue,
-  placeholder = "enter content",
+  defaultValue = "",
 }) => {
   return (
     <div className="mb-2">
@@ -18,6 +17,7 @@ const RTE = ({
         </label>
       )}
       <ReactQuill
+        defaultValue={defaultValue}
         className={`${className}`}
         onChange={(value) => {
           setValue(name, value);
