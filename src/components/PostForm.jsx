@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { addStorePost } from "../redux/postSlice";
 const PostForm = ({ post }) => {
   const [loading, setLoading] = useState(false);
+  const [localPreviewImg, setLocalPreviewImg] = useState("");
   const {
     register,
     handleSubmit,
@@ -23,7 +24,6 @@ const PostForm = ({ post }) => {
       title: post?.title || "",
       slug: post?.slug || "",
       content: post?.content || "",
-      featuredImage: post?.featuredImage || "",
       alt: post?.alt || "",
     },
   });
@@ -38,11 +38,6 @@ const PostForm = ({ post }) => {
       .replace(/[^\w-]+/g, ""); // Remove any non-word characters (excluding hyphens)
   };
 
-  //const get image url while user trying to update the post
-  const imageUrl = post
-    ? bucketService.getFilePreview(post?.featuredImage).href
-    : null;
-  console.log("image url is", imageUrl);
   //============form submit
   const formSubmit = async (data) => {
     setLoading(true);
@@ -67,12 +62,12 @@ const PostForm = ({ post }) => {
         updatedPost && navigate(`/post/${updatedPost.$id}`);
       } else {
         //---------logic to creating the post
+
         //1. upload image
         const image = data.featuredImage[0]
           ? await bucketService.uploadFile(data.featuredImage[0])
           : null;
 
-        console.log("uploaded image is", image);
         //2. create post
         const post = await postService.createPost({
           ...data,
@@ -134,15 +129,40 @@ const PostForm = ({ post }) => {
           />
         </div>
         <div className="col-span-12 sm:col-span-5">
-          <FileInput 
-           register={register}
-           errors={errors}
-           name="featuredImage"
-           label="featuredImage"
-           accept="image/png,image,jpg,image/jpeg,image/gif"
-          //  defaultValue={imageUrl}
+          {post && (
+            <div className="w-full mb-4">
+              <img
+                src={bucketService.getFilePreview(post.featuredImage)}
+                alt={post.alt}
+                className="rounded-lg"
+              />
+            </div>
+          )}
+          {!post && localPreviewImg && (
+            <div className="w-full mb-4">
+              <img src={localPreviewImg} alt="" className="rounded-lg" />
+            </div>
+          )}
+          <FileInput
+            register={register}
+            errors={errors}
+            name="featuredImage"
+            label="featuredImage"
+            accept="image/png,image,jpg,image/jpeg,image/gif"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setLocalPreviewImg(reader.result);
+                };
+                reader.readAsDataURL(file);
+              } else {
+                setLocalPreviewImg("");
+              }
+            }}
           />
-        
+
           <Input
             register={register}
             errors={errors}
