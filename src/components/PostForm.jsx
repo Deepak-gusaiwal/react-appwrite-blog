@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Container,
-  ErrorTxt,
-  FileInput,
-  Input,
-  RTE,
-  Select,
-} from "./index";
+import { Button, Container, ErrorTxt, Input, RTE, Select } from "./index";
 import { useDispatch, useSelector } from "react-redux";
 import { bucketService } from "../services/bucket";
 import { postService } from "../services/post";
@@ -20,7 +12,7 @@ const PostForm = ({ post }) => {
     content: "",
     featuredImage: "",
     category: "",
-    status: "",
+    blogStatus: "",
     alt: "",
     metaTitle: "",
     metaKeywords: "",
@@ -29,7 +21,6 @@ const PostForm = ({ post }) => {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isCustomSlug, setIsCustomrSlug] = useState(false);
-  const [localPreviewImg, setLocalPreviewImg] = useState("");
 
   const { userData } = useSelector((state) => state.userSliceReducer);
   const navigate = useNavigate();
@@ -68,15 +59,17 @@ const PostForm = ({ post }) => {
     e.preventDefault();
     const {
       title,
+      content,
       slug,
       featuredImage,
       category,
-      state,
+      blogStatus,
       alt,
       metaTitle,
       metaKeywords,
       metaDescription,
     } = formData;
+
     setLoading(true);
     if (
       !title ||
@@ -84,7 +77,7 @@ const PostForm = ({ post }) => {
       !content ||
       !featuredImage ||
       !category ||
-      !state ||
+      !blogStatus ||
       !alt ||
       !metaTitle ||
       !metaKeywords ||
@@ -118,11 +111,10 @@ const PostForm = ({ post }) => {
         updatedPost && navigate(`/post/${updatedPost.$id}`);
       } else {
         //---------logic to creating the post
-        console.log("calling create post");
         //1. upload image
-        const image = formData.featuredImage[0]
-          ? await bucketService.uploadFile(formData.featuredImage[0])
-          : null;
+        const image =  await bucketService.uploadFile(formData.featuredImage[0])
+        console.log("image is", image); 
+        
 
         //2. create post
         const post = await postService.createPost({
@@ -145,7 +137,6 @@ const PostForm = ({ post }) => {
     }
   };
 
-  const val = "hello this is the val";
   return (
     <Container>
       <h1 className="font-bold text-center uppercase text-2xl">
@@ -208,20 +199,7 @@ const PostForm = ({ post }) => {
           />
         </div>
         <div className="col-span-12 sm:col-span-5">
-          {post && (
-            <div className="w-full mb-4">
-              <img
-                src={bucketService.getFilePreview(post.featuredImage)}
-                alt={post.alt}
-                className="rounded-lg"
-              />
-            </div>
-          )}
-          {!post && localPreviewImg && (
-            <div className="w-full mb-4">
-              <img src={localPreviewImg} alt="" className="rounded-lg" />
-            </div>
-          )}
+          
           <Input
             type="file"
             placeholder="Select Featured Image"
@@ -280,12 +258,14 @@ const PostForm = ({ post }) => {
             <div className="lg:col-span-6 col-span-12">
               <Select
                 label="status"
-                value={formData.status}
-                name="status"
+                value={formData.blogStatus}
+                name="blogStatus"
                 onChange={handleChange}
                 options={["Active", "inActive"]}
               />
-              {error && !formData.status && <ErrorTxt>invalid status</ErrorTxt>}
+              {error && !formData.blogStatus && (
+                <ErrorTxt>invalid status</ErrorTxt>
+              )}
             </div>
             <div className="lg:col-span-6 col-span-12">
               <Select

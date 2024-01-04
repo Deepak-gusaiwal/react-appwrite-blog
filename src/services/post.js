@@ -6,6 +6,7 @@ import {
   collectionId,
   bucketId,
 } from "../config/env";
+import { data } from "autoprefixer";
 class PostService {
   client = new Client();
   databases;
@@ -15,16 +16,17 @@ class PostService {
     this.databases = new Databases(this.client);
   }
 
-  async createPost({ title, slug, content, featuredImage, alt, userId }) {
+  async createPost({ ...formData }) {
+    console.log("form data at post.js", formData);
     try {
-      return await this.databases.createDocument(dbId, collectionId, slug, {
-        title,
-        slug,
-        content,
-        featuredImage,
-        alt,
-        userId,
-      });
+      return await this.databases.createDocument(
+        dbId,
+        collectionId,
+        formData.slug,
+        {
+          ...formData,
+        }
+      );
     } catch (error) {
       console.log("Create Post Service Error ::", error.message);
       return false;
