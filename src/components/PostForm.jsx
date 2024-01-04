@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, FileInput, Input, RTE, Select } from "./index";
+import {
+  Button,
+  Container,
+  ErrorTxt,
+  FileInput,
+  Input,
+  RTE,
+  Select,
+} from "./index";
 import { useDispatch, useSelector } from "react-redux";
 import { bucketService } from "../services/bucket";
 import { postService } from "../services/post";
@@ -61,7 +69,6 @@ const PostForm = ({ post }) => {
     const {
       title,
       slug,
-      content,
       featuredImage,
       category,
       state,
@@ -111,7 +118,7 @@ const PostForm = ({ post }) => {
         updatedPost && navigate(`/post/${updatedPost.$id}`);
       } else {
         //---------logic to creating the post
-
+        console.log("calling create post");
         //1. upload image
         const image = formData.featuredImage[0]
           ? await bucketService.uploadFile(formData.featuredImage[0])
@@ -154,6 +161,10 @@ const PostForm = ({ post }) => {
             name="title"
             onChange={handleChange}
           />
+          {error && !formData.title && <ErrorTxt>invalid Title</ErrorTxt>}
+          {error && formData.title && formData.title.length < 4 && (
+            <ErrorTxt>title length should be atleast 4</ErrorTxt>
+          )}
           <Input
             placeholder="enter slug"
             label="slug"
@@ -168,6 +179,10 @@ const PostForm = ({ post }) => {
             readOnly={!isCustomSlug}
             name="slug"
           />
+          {error && !formData.slug && <ErrorTxt>invalid slug</ErrorTxt>}
+          {error && formData.slug && formData.slug.length < 4 && (
+            <ErrorTxt>slug length should be atleast 4</ErrorTxt>
+          )}
 
           <div className="checkBox flex gap-2 items-center bg-yellow-100 px-2 ">
             <input
@@ -216,6 +231,9 @@ const PostForm = ({ post }) => {
             onChange={handleChange}
             accept=".jpg, .jpeg, .png"
           />
+          {error && !formData.featuredImage && (
+            <ErrorTxt>invalid featured image</ErrorTxt>
+          )}
           <Input
             type="text"
             placeholder="enter alt"
@@ -224,6 +242,7 @@ const PostForm = ({ post }) => {
             name="alt"
             onChange={handleChange}
           />
+          {error && !formData.alt && <ErrorTxt>invalid alt</ErrorTxt>}
           <Input
             type="text"
             placeholder="enter meta title"
@@ -232,6 +251,9 @@ const PostForm = ({ post }) => {
             name="metaTitle"
             onChange={handleChange}
           />
+          {error && !formData.metaTitle && (
+            <ErrorTxt>invalid meta title</ErrorTxt>
+          )}
           <Input
             type="text"
             placeholder="enter meta keywords"
@@ -240,6 +262,9 @@ const PostForm = ({ post }) => {
             name="metaKeywords"
             onChange={handleChange}
           />
+          {error && !formData.metaKeywords && (
+            <ErrorTxt>invalid meta keywords</ErrorTxt>
+          )}
           <Input
             type="text"
             placeholder="enter meta description"
@@ -248,6 +273,9 @@ const PostForm = ({ post }) => {
             name="metaDescription"
             onChange={handleChange}
           />
+          {error && !formData.metaDescription && (
+            <ErrorTxt>invalid meta description</ErrorTxt>
+          )}
           <div className="grid grid-cols-12 gap-4">
             <div className="lg:col-span-6 col-span-12">
               <Select
@@ -257,6 +285,7 @@ const PostForm = ({ post }) => {
                 onChange={handleChange}
                 options={["Active", "inActive"]}
               />
+              {error && !formData.status && <ErrorTxt>invalid status</ErrorTxt>}
             </div>
             <div className="lg:col-span-6 col-span-12">
               <Select
@@ -266,6 +295,9 @@ const PostForm = ({ post }) => {
                 onChange={handleChange}
                 options={["popular", "best"]}
               />
+              {error && !formData.category && (
+                <ErrorTxt>invalid category</ErrorTxt>
+              )}
             </div>
           </div>
 
