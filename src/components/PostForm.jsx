@@ -71,7 +71,6 @@ const PostForm = ({ post }) => {
       metaDescription,
     } = formData;
     setLoading(true);
-    console.log("form data is", formData);
     if (
       !title ||
       !slug ||
@@ -91,7 +90,6 @@ const PostForm = ({ post }) => {
       return;
     }
 
-    return;
     try {
       if (post) {
         //---------logic to updating the post
@@ -115,13 +113,13 @@ const PostForm = ({ post }) => {
         //---------logic to creating the post
 
         //1. upload image
-        const image = data.featuredImage[0]
-          ? await bucketService.uploadFile(data.featuredImage[0])
+        const image = formData.featuredImage[0]
+          ? await bucketService.uploadFile(formData.featuredImage[0])
           : null;
 
         //2. create post
         const post = await postService.createPost({
-          ...data,
+          ...formData,
           featuredImage: image ? image.$id : null,
           userId: userData.$id,
         });
@@ -216,6 +214,7 @@ const PostForm = ({ post }) => {
             value={formData.featuredImage}
             name="featuredImage"
             onChange={handleChange}
+            accept=".jpg, .jpeg, .png"
           />
           <Input
             type="text"
