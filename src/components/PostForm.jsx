@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Container, FileInput, Input, RTE, Select } from "./index";
 import { useDispatch, useSelector } from "react-redux";
 import { bucketService } from "../services/bucket";
@@ -34,6 +34,11 @@ const PostForm = ({ post }) => {
       .replace(/[^\w-]+/g, ""); // Remove any non-word characters (excluding hyphens)
   };
 
+  useEffect(() => {
+    if (!isCustomSlug) {
+      setFormData({ ...formData, slug: generateSlug(formData.title) });
+    }
+  }, [isCustomSlug]);
   // handdel input change
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -167,11 +172,11 @@ const PostForm = ({ post }) => {
           <div className="checkBox flex gap-2 items-center bg-yellow-100 px-2 ">
             <input
               onChange={(e) => {
-                setIsCustomrSlug(e.target.value);
+                setIsCustomrSlug(e.target.checked);
               }}
-              defaultChecked={false}
               type="checkbox"
               id="customCheck"
+              defaultChecked={isCustomSlug}
             />
             <label className="capitalize select-none" htmlFor="customCheck">
               custom Slug
