@@ -139,6 +139,8 @@ const PostForm = ({ post }) => {
       setLoading(false);
     }
   };
+
+  const val = "hello this is the val";
   return (
     <Container>
       <h1 className="font-bold text-center uppercase text-2xl">
@@ -183,7 +185,14 @@ const PostForm = ({ post }) => {
             </label>
           </div>
 
-          <RTE name="content" label="content" />
+          <RTE
+            name="content"
+            value={formData.content}
+            onEditorChange={(value) => {
+              setFormData({ ...formData, content: value });
+            }}
+            label="content"
+          />
         </div>
         <div className="col-span-12 sm:col-span-5">
           {post && (
@@ -260,8 +269,7 @@ const PostForm = ({ post }) => {
               />
             </div>
           </div>
-        </div>
-        <div className="col-span-12 ">
+
           <Button loading={loading} type="submit">
             Add
           </Button>

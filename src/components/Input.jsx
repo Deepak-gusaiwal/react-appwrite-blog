@@ -23,7 +23,6 @@ const Input = ({
         readOnly={readOnly}
         {...props}
       />
-
     </div>
   );
 };
