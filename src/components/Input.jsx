@@ -5,9 +5,6 @@ const Input = ({
   type = "text",
   placeholder,
   className = "",
-  register,
-  errors,
-  name,
   readOnly = false,
   ...props
 }) => {
@@ -19,18 +16,14 @@ const Input = ({
         </label>
       )}
       <input
-        id={name}
+        id={label}
         type={type}
         placeholder={placeholder}
         className={`w-full py-1 px-2 rounded shadow ${className}`}
-        {...register(name)}
         readOnly={readOnly}
         {...props}
       />
 
-      {errors[name] && (
-        <p className="text-red-500 text-[12px]">{errors[name]?.message}</p>
-      )}
     </div>
   );
 };

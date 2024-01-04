@@ -1,32 +1,28 @@
 import React, { useState } from "react";
-import { Button, Container, FileInput, Input, RTE } from "./index";
-import { useForm } from "react-hook-form";
-import { postValidator } from "../config/formValidator";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { Button, Container, FileInput, Input, RTE, Select } from "./index";
 import { useDispatch, useSelector } from "react-redux";
 import { bucketService } from "../services/bucket";
 import { postService } from "../services/post";
 import { useNavigate } from "react-router-dom";
 import { addStorePost } from "../redux/postSlice";
 const PostForm = ({ post }) => {
-  const [loading, setLoading] = useState(false);
-  const [localPreviewImg, setLocalPreviewImg] = useState("");
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    control,
-    getValues,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(postValidator),
-    defaultValues: {
-      title: post?.title || "",
-      slug: post?.slug || "",
-      content: post?.content || "",
-      alt: post?.alt || "",
-    },
+  const [formData, setFormData] = useState({
+    title: "",
+    slug: "",
+    content: "",
+    featuredImage: "",
+    category: "",
+    status: "",
+    alt: "",
+    metaTitle: "",
+    metaKeywords: "",
+    metaDescription: "",
   });
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isCustomSlug, setIsCustomrSlug] = useState(false);
+  const [localPreviewImg, setLocalPreviewImg] = useState("");
+
   const { userData } = useSelector((state) => state.userSliceReducer);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -38,9 +34,59 @@ const PostForm = ({ post }) => {
       .replace(/[^\w-]+/g, ""); // Remove any non-word characters (excluding hyphens)
   };
 
+  // handdel input change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "title" && !isCustomSlug) {
+      setFormData((prevData) => ({
+        ...prevData,
+        title: value,
+        slug: generateSlug(value),
+      }));
+      return;
+    }
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
   //============form submit
-  const formSubmit = async (data) => {
+  const formSubmit = async (e) => {
+    e.preventDefault();
+    const {
+      title,
+      slug,
+      content,
+      featuredImage,
+      category,
+      state,
+      alt,
+      metaTitle,
+      metaKeywords,
+      metaDescription,
+    } = formData;
     setLoading(true);
+    console.log("form data is", formData);
+    if (
+      !title ||
+      !slug ||
+      !content ||
+      !featuredImage ||
+      !category ||
+      !state ||
+      !alt ||
+      !metaTitle ||
+      !metaKeywords ||
+      !metaDescription ||
+      title.length < 5 ||
+      slug.length < 5
+    ) {
+      setError(true);
+      setLoading(false);
+      return;
+    }
+
+    return;
     try {
       if (post) {
         //---------logic to updating the post
@@ -93,40 +139,46 @@ const PostForm = ({ post }) => {
       <h1 className="font-bold text-center uppercase text-2xl">
         {post ? "Update" : "Add"} Post
       </h1>
-      <form
-        className="grid grid-cols-12 gap-4 "
-        onSubmit={handleSubmit(formSubmit)}
-      >
+      <form className="grid grid-cols-12 gap-4 " onSubmit={formSubmit}>
         <div className="col-span-12 sm:col-span-7">
           <Input
-            register={register}
-            onChange={(e) => {
-              setValue("slug", generateSlug(e.target.value));
-            }}
-            errors={errors}
             type="text"
             placeholder="enter title"
-            name="title"
             label="title"
+            value={formData.title}
+            name="title"
+            onChange={handleChange}
           />
           <Input
-            register={register}
-            errors={errors}
-            type="text"
             placeholder="enter slug"
-            name="slug"
             label="slug"
-            readOnly
+            value={formData.slug}
+            onChange={(e) => {
+              isCustomSlug &&
+                setFormData({
+                  ...formData,
+                  slug: generateSlug(e.target.value),
+                });
+            }}
+            readOnly={!isCustomSlug}
+            name="slug"
           />
 
-          <RTE
-            errors={errors}
-            name="content"
-            label="content"
-            setValue={setValue}
-            control={control}
-            defaultValue={getValues("content")}
-          />
+          <div className="checkBox flex gap-2 items-center bg-yellow-100 px-2 ">
+            <input
+              onChange={(e) => {
+                setIsCustomrSlug(e.target.value);
+              }}
+              defaultChecked={false}
+              type="checkbox"
+              id="customCheck"
+            />
+            <label className="capitalize select-none" htmlFor="customCheck">
+              custom Slug
+            </label>
+          </div>
+
+          <RTE name="content" label="content" />
         </div>
         <div className="col-span-12 sm:col-span-5">
           {post && (
@@ -143,34 +195,66 @@ const PostForm = ({ post }) => {
               <img src={localPreviewImg} alt="" className="rounded-lg" />
             </div>
           )}
-          <FileInput
-            register={register}
-            errors={errors}
-            name="featuredImage"
-            label="featuredImage"
-            accept="image/png,image,jpg,image/jpeg,image/gif"
-            onChange={(e) => {
-              const file = e.target.files[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  setLocalPreviewImg(reader.result);
-                };
-                reader.readAsDataURL(file);
-              } else {
-                setLocalPreviewImg("");
-              }
-            }}
-          />
-
           <Input
-            register={register}
-            errors={errors}
+            type="file"
+            placeholder="Select Featured Image"
+            label="Featured Image"
+            value={formData.featuredImage}
+            name="featuredImage"
+            onChange={handleChange}
+          />
+          <Input
             type="text"
             placeholder="enter alt"
-            name="alt"
             label="alt"
+            value={formData.alt}
+            name="alt"
+            onChange={handleChange}
           />
+          <Input
+            type="text"
+            placeholder="enter meta title"
+            label="meta title"
+            value={formData.metaTitle}
+            name="metaTitle"
+            onChange={handleChange}
+          />
+          <Input
+            type="text"
+            placeholder="enter meta keywords"
+            label="meta keywords"
+            value={formData.metaKeywords}
+            name="metaKeywords"
+            onChange={handleChange}
+          />
+          <Input
+            type="text"
+            placeholder="enter meta description"
+            label="meta description"
+            value={formData.metaDescription}
+            name="metaDescription"
+            onChange={handleChange}
+          />
+          <div className="grid grid-cols-12 gap-4">
+            <div className="lg:col-span-6 col-span-12">
+              <Select
+                label="status"
+                value={formData.status}
+                name="status"
+                onChange={handleChange}
+                options={["Active", "inActive"]}
+              />
+            </div>
+            <div className="lg:col-span-6 col-span-12">
+              <Select
+                label="category"
+                value={formData.category}
+                name="category"
+                onChange={handleChange}
+                options={["popular", "best"]}
+              />
+            </div>
+          </div>
         </div>
         <div className="col-span-12 ">
           <Button loading={loading} type="submit">

@@ -5,4 +5,6 @@ export { default as Loading } from "./Loading";
 export { default as PostForm } from "./PostForm";
 export { default as PostCard } from "./PostCard";
 export { default as FileInput } from "./FileInput";
+export { default as ErrorTxt } from "./ErrorTxt";
+export { default as Select } from "./Select";
 export { default as RTE } from "./RTE";
