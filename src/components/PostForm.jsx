@@ -222,7 +222,7 @@ const PostForm = ({ post }) => {
           {
             //show image after selecting the image
             formData?.featuredImage &&
-              formData.featuredImage !== post.featuredImage && (
+              formData.featuredImage !== post?.featuredImage && (
                 <img
                   src={URL.createObjectURL(formData.featuredImage[0])}
                   alt="the image is"
