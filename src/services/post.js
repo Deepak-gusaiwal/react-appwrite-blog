@@ -33,14 +33,9 @@ class PostService {
     }
   }
 
-  async updatePost(docId, { title, slug, content, featuredImage }) {
+  async updatePost(docId, { ...formData }) {
     try {
-      return await this.databases.updateDocument(dbId, collectionId, docId, {
-        title,
-        slug,
-        content,
-        featuredImage,
-      });
+      return await this.databases.updateDocument(dbId, collectionId, docId, {...formData});
     } catch (error) {
       console.log("Update Post Service Error ::", error.message);
       return false;

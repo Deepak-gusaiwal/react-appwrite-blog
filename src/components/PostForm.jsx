@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { bucketService } from "../services/bucket";
 import { postService } from "../services/post";
 import { useNavigate } from "react-router-dom";
-import { addStorePost } from "../redux/postSlice";
+import { addStorePost, updateStorePost } from "../redux/postSlice";
 const PostForm = ({ post }) => {
   const [formData, setFormData] = useState({
     title: post?.title || "",
@@ -101,10 +101,10 @@ const PostForm = ({ post }) => {
 
     try {
       if (post) {
-        //-------------------------------------------------------------------------------------------------------------------------------------------------logic to updating the post-------------------------------------------
+        //-----------------------------------------------------------------------------------------------------------------------------------------------logic to updating the post-------------------------
         //1. uploading the new image and deleting the old image
-        const newImage = data.featuredImage[0]
-          ? await bucketService.uploadFile(data.featuredImage[0])
+        const newImage = formData.featuredImage[0]
+          ? await bucketService.uploadFile(formData.featuredImage[0])
           : null;
 
         //-now deleting the old image if the newone get uploaded
@@ -113,11 +113,13 @@ const PostForm = ({ post }) => {
         }
         //2.now updating the post data
         const updatedPost = await postService.updatePost(post.slug, {
-          ...data,
-          featuredImage: newImage ? newImage.$id : null,
+          ...formData,
+          featuredImage: newImage ? newImage.$id : post.featuredImage,
         });
-
-        updatedPost && navigate(`/post/${updatedPost.$id}`);
+        if (updatedPost) {
+          dispatch(updateStorePost(updatedPost));
+          navigate(`/post/${updatedPost.$id}`);
+        }
       } else {
         //--------------------------------------------------------------------------------------------------------------------------------logic to creating the post---------------------------------------------------------------
         //1. upload image
@@ -207,6 +209,24 @@ const PostForm = ({ post }) => {
           />
         </div>
         <div className="col-span-12 sm:col-span-5">
+          {
+            //show image of the post while updating it
+            post?.featuredImage && (
+              <img
+                src={bucketService.getFilePreview(post.featuredImage)}
+                alt={post.alt}
+              />
+            )
+          }
+          {
+            //show image after selecting the image
+            formData?.featuredImage && !post && (
+              <img
+                src={URL.createObjectURL(formData.featuredImage[0])}
+                alt="the image is"
+              />
+            )
+          }
           <Input
             type="file"
             placeholder="Select Featured Image"
@@ -289,7 +309,7 @@ const PostForm = ({ post }) => {
           </div>
 
           <Button loading={loading} type="submit">
-            Add
+            {post ? "update" : "Add"}
           </Button>
         </div>
       </form>

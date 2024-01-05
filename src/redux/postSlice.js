@@ -17,7 +17,10 @@ const postSlice = createSlice({
       const postIdToDelete = action.payload;
       state.allPosts = state.allPosts.filter(post => post.$id !== postIdToDelete);
     },
-    updateStorePost: (state, action) => {},
+    updateStorePost: (state, action) => {
+      const updatedPost = action.payload;
+      state.allPosts = state.allPosts.map(post => post.$id !== updatedPost.$id ? post : { ...updatedPost });
+    },
   },
 });
 export const { setAllStorePosts, addStorePost, deleteStorePost, updateStorePost } =
