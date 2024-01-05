@@ -37,7 +37,7 @@ const SinglePost = () => {
         />
       </div>
       <h2>{post.title}</h2>
-      <h2>{ReactHtmlParser(post.content)}</h2>
+      <div>{ReactHtmlParser(post.content)}</div>
       {isAuther && (
         <div className="flex gap-2">
           <Link

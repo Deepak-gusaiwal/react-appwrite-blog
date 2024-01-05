@@ -42,6 +42,7 @@ const RTE = ({ label, className = "", ...props }) => {
             "removeformat | help",
           content_style:
             "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+          forced_root_block: "p",
         }}
       />
     </div>

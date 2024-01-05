@@ -13,7 +13,7 @@ const Select = ({ label, className = "", options = [], ...props }) => {
         {...props}
         id={label}
       >
-        <option defaultChecked value="">
+        <option disabled value="">
           --select status---
         </option>
         {options.map((option) => {

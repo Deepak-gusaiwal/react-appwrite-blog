@@ -7,16 +7,16 @@ import { useNavigate } from "react-router-dom";
 import { addStorePost } from "../redux/postSlice";
 const PostForm = ({ post }) => {
   const [formData, setFormData] = useState({
-    title: "",
-    slug: "",
-    content: "",
-    featuredImage: "",
-    category: "",
-    blogStatus: "",
-    alt: "",
-    metaTitle: "",
-    metaKeywords: "",
-    metaDescription: "",
+    title: post?.title || "",
+    slug: post?.slug || "",
+    content: post?.content || "",
+    featuredImage: post?.featuredImage || "",
+    category: post?.category || "",
+    blogStatus: post?.blogStatus || "",
+    alt: post?.alt || "",
+    metaTitle: post?.metaTitle || "",
+    metaKeywords: post?.metaKeywords || "",
+    metaDescription: post?.metaDescription || "",
   });
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -40,12 +40,19 @@ const PostForm = ({ post }) => {
   }, [isCustomSlug]);
   // handdel input change
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, files } = e.target;
     if (name === "title" && !isCustomSlug) {
       setFormData((prevData) => ({
         ...prevData,
         title: value,
         slug: generateSlug(value),
+      }));
+      return;
+    }
+    if (name === "featuredImage") {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: files,
       }));
       return;
     }
@@ -57,6 +64,7 @@ const PostForm = ({ post }) => {
   //============form submit
   const formSubmit = async (e) => {
     e.preventDefault();
+    console.log("at post form.jsx", formData);
     const {
       title,
       content,
@@ -71,6 +79,7 @@ const PostForm = ({ post }) => {
     } = formData;
 
     setLoading(true);
+    //validating form values
     if (
       !title ||
       !slug ||
@@ -92,7 +101,7 @@ const PostForm = ({ post }) => {
 
     try {
       if (post) {
-        //---------logic to updating the post
+        //-------------------------------------------------------------------------------------------------------------------------------------------------logic to updating the post-------------------------------------------
         //1. uploading the new image and deleting the old image
         const newImage = data.featuredImage[0]
           ? await bucketService.uploadFile(data.featuredImage[0])
@@ -110,12 +119,11 @@ const PostForm = ({ post }) => {
 
         updatedPost && navigate(`/post/${updatedPost.$id}`);
       } else {
-        //---------logic to creating the post
+        //--------------------------------------------------------------------------------------------------------------------------------logic to creating the post---------------------------------------------------------------
         //1. upload image
-        const image =  await bucketService.uploadFile(formData.featuredImage[0])
-        console.log("image is", image); 
-        
-
+        const image = featuredImage[0]
+          ? await bucketService.uploadFile(formData.featuredImage[0])
+          : null;
         //2. create post
         const post = await postService.createPost({
           ...formData,
@@ -199,12 +207,11 @@ const PostForm = ({ post }) => {
           />
         </div>
         <div className="col-span-12 sm:col-span-5">
-          
           <Input
             type="file"
             placeholder="Select Featured Image"
             label="Featured Image"
-            value={formData.featuredImage}
+            // value={formData.featuredImage}
             name="featuredImage"
             onChange={handleChange}
             accept=".jpg, .jpeg, .png"
@@ -258,7 +265,7 @@ const PostForm = ({ post }) => {
             <div className="lg:col-span-6 col-span-12">
               <Select
                 label="status"
-                value={formData.blogStatus}
+                value={formData.blogStatus || "active"}
                 name="blogStatus"
                 onChange={handleChange}
                 options={["Active", "inActive"]}
@@ -270,10 +277,10 @@ const PostForm = ({ post }) => {
             <div className="lg:col-span-6 col-span-12">
               <Select
                 label="category"
-                value={formData.category}
+                value={formData.category || "all"}
                 name="category"
                 onChange={handleChange}
-                options={["popular", "best"]}
+                options={["all", "popular", "best"]}
               />
               {error && !formData.category && (
                 <ErrorTxt>invalid category</ErrorTxt>
