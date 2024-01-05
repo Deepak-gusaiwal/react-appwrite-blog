@@ -211,21 +211,23 @@ const PostForm = ({ post }) => {
         <div className="col-span-12 sm:col-span-5">
           {
             //show image of the post while updating it
-            post?.featuredImage && (
-              <img
-                src={bucketService.getFilePreview(post.featuredImage)}
-                alt={post.alt}
-              />
-            )
+            post?.featuredImage &&
+              formData.featuredImage == post.featuredImage && (
+                <img
+                  src={bucketService.getFilePreview(post.featuredImage)}
+                  alt={post.alt}
+                />
+              )
           }
           {
             //show image after selecting the image
-            formData?.featuredImage && !post && (
-              <img
-                src={URL.createObjectURL(formData.featuredImage[0])}
-                alt="the image is"
-              />
-            )
+            formData?.featuredImage &&
+              formData.featuredImage !== post.featuredImage && (
+                <img
+                  src={URL.createObjectURL(formData.featuredImage[0])}
+                  alt="the image is"
+                />
+              )
           }
           <Input
             type="file"
