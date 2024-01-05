@@ -1,4 +1,4 @@
-import { Client, Databases } from "appwrite";
+import { Client, Databases, ID } from "appwrite";
 import {
   endPointUrl,
   projectId,
@@ -22,7 +22,7 @@ class PostService {
       return await this.databases.createDocument(
         dbId,
         collectionId,
-        formData.slug,
+        ID.unique(),
         {
           ...formData,
         }
@@ -35,7 +35,9 @@ class PostService {
 
   async updatePost(docId, { ...formData }) {
     try {
-      return await this.databases.updateDocument(dbId, collectionId, docId, {...formData});
+      return await this.databases.updateDocument(dbId, collectionId, docId, {
+        ...formData,
+      });
     } catch (error) {
       console.log("Update Post Service Error ::", error.message);
       return false;

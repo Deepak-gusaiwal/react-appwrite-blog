@@ -10,7 +10,7 @@ const SinglePost = () => {
   const { slug } = useParams();
   const { allPosts } = useSelector((state) => state.postSliceReducer);
   const { userData } = useSelector((state) => state.userSliceReducer);
-  const post = allPosts?.find((p) => p.$id === slug);
+  const post = allPosts?.find((p) => p.slug === slug);
   const isAuther = post && userData?.$id === post.userId ? true : false;
   const image = post ? bucketService.getFilePreview(post.featuredImage) : null;
   const navigate = useNavigate();
@@ -18,9 +18,9 @@ const SinglePost = () => {
 
   const deleteHanddler = async () => {
     try {
-      const result = await postService.deletePost(slug);
+      const result = await postService.deletePost(post.$id);
       if (result) {
-        dispatch(deleteStorePost(slug));
+        dispatch(deleteStorePost(post.$id));
         navigate("/post");
       }
     } catch (error) {

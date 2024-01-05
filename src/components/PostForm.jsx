@@ -134,7 +134,7 @@ const PostForm = ({ post }) => {
         });
         if (post) {
           dispatch(addStorePost(post));
-          navigate(`/post/${post.$id}`);
+          navigate(`/post/${post.slug}`);
         }
       }
     } catch (error) {
